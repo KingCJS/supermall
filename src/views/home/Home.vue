@@ -145,7 +145,7 @@
         getHomeGoods(type,page).then(res => {
           console.log(res);
           this.goods[type].list.push(...res.data.list);
-          this.goods[type].page += 1;
+          this.goods[type].page += 2
         })
       }
 
