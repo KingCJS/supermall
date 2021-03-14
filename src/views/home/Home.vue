@@ -101,7 +101,7 @@
   import NavBar from '@/compoents/common/navbar/NavBar'
   import TabControl from '@/compoents/content/tabControl/TabControl'
 
-  import {getHomeMultidata} from 'network/home'
+  import {getHomeMultidata,getHomeGoods} from 'network/home'
 
 
   export default {
@@ -117,17 +117,39 @@
       return {
         banners: [],
         recommends: [],
+        goods: {
+          'pop': {page: 0, list: []},
+          'new': {page: 0, list: []},
+          'sell': {page: 0, list: []},
+
+        }
       }
        
       
     },
     created() {
-      getHomeMultidata().then(res => {
+      this.getHomeMultidata()
+      
+      this.getHomeGoods('POP')
+
+    },
+    methods: {
+      getHomeMultidata() {
+        getHomeMultidata().then(res => {
         this.banners = res.data.banner.list;
         this.recommends = res.data.recommend.list;
-
       })
-    }
+      },
+      getHomeGoods(type) {
+        const page = this.goods[type].page + 1;
+        getHomeGoods(type,page).then(res => {
+          console.log(res);
+          this.goods[type].list.push(...res.data.list);
+          this.goods[type].page += 1;
+        })
+      }
+
+    },
   }
 </script>
 
