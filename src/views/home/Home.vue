@@ -1,7 +1,7 @@
 <template>
   <div id="home">   
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
-    <home-swipter :banners= "banner"></home-swipter>
+    <home-swipter :banner= "banners"></home-swipter>
     <RecommendView :recommend="recommends"></RecommendView>
   </div>
 
@@ -22,7 +22,7 @@
     },
     data() {
       return {
-        banner: [],
+        banners: [],
         recommends: [],
       }
     },
