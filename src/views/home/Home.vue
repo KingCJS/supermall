@@ -1,95 +1,15 @@
 <template>
   <div id="home">   
     <nav-bar class="home-nav" ><div slot="center">购物街</div></nav-bar>
-    <home-swipter :banners= "banners" ></home-swipter>
-    <recommend-view :recommends="recommends"></recommend-view>
-    <feature-view></feature-view>
-    <tab-control class="tab-control" :titles="['流行', '新款', '精选']" ></tab-control>
-    <ul>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>10</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>10</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>10</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-    <li>1</li>
-    <li>2</li>
-    <li>3</li>
-    <li>4</li>
-    <li>5</li>
-    <li>6</li>
-    <li>7</li>
-    <li>8</li>
-    <li>9</li>
-    <li>10</li>
-    <li>11</li>
-    <li>12</li>
-    <li>13</li>
-    <li>14</li>
-    <li>15</li>
-    <li>16</li>
-    <li>17</li>
-    <li>18</li>
-    <li>19</li>
-    <li>20</li>
-  </ul>
+    
+    <scroll class="content">
+      <home-swipter :banners= "banners" v-if="banners.length > 0"></home-swipter>
+      <recommend-view :recommends="recommends"></recommend-view>
+      <feature-view></feature-view>
+      <tab-control class="tab-control" :titles="['流行', '新款', '精选']"  @tabClick= "tabClick"></tab-control>
+      <goods-list :goods= "showGoods"></goods-list>
+    </scroll>
   </div>
-  
-
 </template>
 
 <script>
@@ -100,8 +20,12 @@
 
   import NavBar from '@/compoents/common/navbar/NavBar'
   import TabControl from '@/compoents/content/tabControl/TabControl'
+  import GoodsList from '@/compoents/content/goods/GoodsList'
+  import Scroll from '@/compoents/common/scroll/Scroll'
+  
 
   import {getHomeMultidata,getHomeGoods} from 'network/home'
+
 
 
   export default {
@@ -112,6 +36,9 @@
       RecommendView,
       FeatureView,
       TabControl,
+      GoodsList,
+      Scroll
+
     },
     data() {
       return {
@@ -122,18 +49,39 @@
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []},
 
-        }
+        },
+        currentType: 'pop'
       }
-       
-      
+    },
+    computed: {
+      showGoods() {
+        return this.goods[this.currentType].list
+      }
     },
     created() {
       this.getHomeMultidata()
       
-      this.getHomeGoods('POP')
+      this.getHomeGoods('pop')
+      this.getHomeGoods('new')
+      this.getHomeGoods('sell')
+
 
     },
     methods: {
+      tabClick(index) {
+        switch (index) {
+          case 0:
+            this.currentType = 'pop'
+            break
+          case 1:
+            this.currentType = 'new'
+            break
+          case 2:
+            this.currentType = 'sell'
+            break
+        }
+      },
+
       getHomeMultidata() {
         getHomeMultidata().then(res => {
         this.banners = res.data.banner.list;
@@ -143,9 +91,8 @@
       getHomeGoods(type) {
         const page = this.goods[type].page + 1;
         getHomeGoods(type,page).then(res => {
-          console.log(res);
           this.goods[type].list.push(...res.data.list);
-          this.goods[type].page += 2
+          this.goods[type].page += 1
         })
       }
 
@@ -170,6 +117,15 @@
     right: 0;
     top: 0;
     z-index: 9
+  }
+
+  .content {
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
   }
 
   .tab-control {
