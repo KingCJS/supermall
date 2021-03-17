@@ -1,14 +1,17 @@
 <template>
   <div id="home">   
-    <nav-bar class="home-nav" ><div slot="center">购物街</div></nav-bar>
+    <nav-bar class="home-nav" ><div slot="center" >购物街</div></nav-bar>
     
-    <scroll class="content">
+    <scroll class="content" ref="scroll" 
+    :probeType= "3" @scroll="contentScroll" 
+    @pullingUp= "loadMore" :pullUpLoad= "true">
       <home-swipter :banners= "banners" v-if="banners.length > 0"></home-swipter>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
       <tab-control class="tab-control" :titles="['流行', '新款', '精选']"  @tabClick= "tabClick"></tab-control>
       <goods-list :goods= "showGoods"></goods-list>
     </scroll>
+    <back-top @click.native= "backTop" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 
@@ -22,9 +25,11 @@
   import TabControl from '@/compoents/content/tabControl/TabControl'
   import GoodsList from '@/compoents/content/goods/GoodsList'
   import Scroll from '@/compoents/common/scroll/Scroll'
+  import BackTop from '@/compoents/content/backTop/BackTop'
   
 
   import {getHomeMultidata,getHomeGoods} from 'network/home'
+
 
 
 
@@ -37,7 +42,8 @@
       FeatureView,
       TabControl,
       GoodsList,
-      Scroll
+      Scroll,
+      BackTop
 
     },
     data() {
@@ -48,9 +54,9 @@
           'pop': {page: 0, list: []},
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []},
-
         },
-        currentType: 'pop'
+        currentType: 'pop',
+        isShowBackTop: false
       }
     },
     computed: {
@@ -64,10 +70,17 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+    },
 
-
+    mounted() {
+      const refresh = this.debounce(this.$refs.scroll.refresh,50)
+      this.$bus.$on('itemImageLoad', () => {
+        // this.$refs.scroll.refresh()
+        refresh()
+      })
     },
     methods: {
+
       tabClick(index) {
         switch (index) {
           case 0:
@@ -81,7 +94,6 @@
             break
         }
       },
-
       getHomeMultidata() {
         getHomeMultidata().then(res => {
         this.banners = res.data.banner.list;
@@ -93,9 +105,33 @@
         getHomeGoods(type,page).then(res => {
           this.goods[type].list.push(...res.data.list);
           this.goods[type].page += 1
+          this.$refs.scroll.finishPullUp()
         })
-      }
+        
+      },
+      
+      backTop() {
+        this.$refs.scroll.scrollTo(0,0)
+      },
 
+      contentScroll(position) {
+        this.isShowBackTop = -position.y > 1000
+       },
+
+      loadMore() {
+         this.getHomeGoods(this.currentType)
+        //  this.$refs.scroll.refresh()
+      },
+
+      debounce(func, delay) {
+        let timer = null
+        return function(...args) {
+          if(timer) clearTimeout(timer)
+          timer = setTimeout(() => {
+            func.apply(this, args)
+          },delay)
+        }
+      }
     },
   }
 </script>

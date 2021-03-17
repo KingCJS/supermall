@@ -13,16 +13,53 @@ export default {
    
     data() {
         return {
-            scroll: null
+            scroll: null,
+            PullUpLoad: false
         }
+    },
+
+    props: {
+        probeType: {
+            type: Number,
+            default: 0
+        },
+
+        pullUpLoad: {
+            type:Boolean,
+            default: false
+        }
+
     },
     mounted() {
         this.scroll = new BScroll(this.$refs.wrapper, {
-            // probeType: 3,
-            // PullUpLoad: true
+            probeType: this.probeType,
+            pullUpLoad: this.pullUpLoad,
+            click: true
         })
+
+        this.scroll.on('scroll',(position) => {
+            this.$emit('scroll', position);
+        })
+
+
+        this.scroll.on('pullingUp', () => {
+          this.$emit('pullingUp')
+        })
+
     },
     methods: {
+        scrollTo(x, y, time= 500) {
+          
+            this.scroll && this.scroll.scrollTo(x, y, time);
+        },
+        finishPullUp() {
+            this.scroll && this.scroll.finishPullUp()
+        },
+        refresh() {
+            
+            this.scroll && this.scroll.refresh()
+
+        }
         
     },
 };

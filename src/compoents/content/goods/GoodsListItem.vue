@@ -1,11 +1,14 @@
 <template>
     <div class="goods-item" >
-        <img :src="goodsItem.show.img" alt="">
-        <div class="goods-info">
-            <p>{{goodsItem.title}}</p>
-            <span class="price">{{goodsItem.price}}</span>
-            <span class="collect">{{goodsItem.cfav}}</span>
+      <a :href="goodsItem.clientUrl">
+       <img :src="goodsItem.show.img" alt="" @load="imageLoad">
+          <div class="goods-info">
+          <p>{{goodsItem.title}}</p>
+          <span class="price">{{goodsItem.price}}</span>
+          <span class="collect">{{goodsItem.cfav}}</span>
         </div>
+      </a>
+       
     </div>
 
 </template>
@@ -31,7 +34,9 @@ export default {
         
     },
     methods: {
-        
+        imageLoad() {
+          this.$bus.$emit('itemImageLoad');
+        }
     },
 };
 </script>
