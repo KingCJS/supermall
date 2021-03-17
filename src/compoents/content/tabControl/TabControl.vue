@@ -1,6 +1,6 @@
 import class from '@vue/cli-service';
 <template>
-    <div class="tab-control">
+    <div class="tab-control" >
         <div class="tab-control-item" 
         v-for="(item,index) in titles"
         :class="{active: index === currentIndex}"
@@ -36,7 +36,8 @@ export default {
         itemClick(index) {
             this.currentIndex = index;
             this.$emit('tabClick', index);
-        }
+        },
+
     },
 };
 </script>
@@ -48,7 +49,7 @@ export default {
     font-size: 15px;
     height: 40px;
     line-height: 40px;
-
+    background-color: #fff;
   }
 
   .tab-control-item {

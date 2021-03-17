@@ -1,14 +1,19 @@
 <template>
-  <div id="home">   
+  <div id="home" class="wrapper">   
     <nav-bar class="home-nav" ><div slot="center" >购物街</div></nav-bar>
-    
+      <tab-control  :titles="['流行', '新款', '精选']"  
+      @tabClick= "tabClick" 
+      ref="tabControl1"
+      class="tab-control"
+      v-show="isFixed">
+     </tab-control>
     <scroll class="content" ref="scroll" 
     :probeType= "3" @scroll="contentScroll" 
     @pullingUp= "loadMore" :pullUpLoad= "true">
-      <home-swipter :banners= "banners" v-if="banners.length > 0"></home-swipter>
+      <home-swipter :banners= "banners" v-if="banners.length > 0" @swipterImageLoad= "swipterImageLoad"></home-swipter>
       <recommend-view :recommends="recommends"></recommend-view>
       <feature-view></feature-view>
-      <tab-control class="tab-control" :titles="['流行', '新款', '精选']"  @tabClick= "tabClick"></tab-control>
+      <tab-control  :titles="['流行', '新款', '精选']"  @tabClick= "tabClick" ref="tabControl2"></tab-control>
       <goods-list :goods= "showGoods"></goods-list>
     </scroll>
     <back-top @click.native= "backTop" v-show="isShowBackTop"></back-top>
@@ -29,6 +34,8 @@
   
 
   import {getHomeMultidata,getHomeGoods} from 'network/home'
+  import { debounce } from '../../common/utils';
+
 
 
 
@@ -56,8 +63,10 @@
           'sell': {page: 0, list: []},
         },
         currentType: 'pop',
-        isShowBackTop: false
-      }
+        isShowBackTop: false,
+        tabOffsetTop: 0,
+        isFixed: false
+}
     },
     computed: {
       showGoods() {
@@ -73,7 +82,7 @@
     },
 
     mounted() {
-      const refresh = this.debounce(this.$refs.scroll.refresh,50)
+      const refresh = debounce(this.$refs.scroll.refresh,50)
       this.$bus.$on('itemImageLoad', () => {
         // this.$refs.scroll.refresh()
         refresh()
@@ -93,6 +102,8 @@
             this.currentType = 'sell'
             break
         }
+        this.$refs.tabControl1.currentIndex = index
+        this.$refs.tabControl2.currentIndex = index
       },
       getHomeMultidata() {
         getHomeMultidata().then(res => {
@@ -116,6 +127,7 @@
 
       contentScroll(position) {
         this.isShowBackTop = -position.y > 1000
+        this.isFixed = (-position.y) > this.tabOffsetTop
        },
 
       loadMore() {
@@ -123,22 +135,19 @@
         //  this.$refs.scroll.refresh()
       },
 
-      debounce(func, delay) {
-        let timer = null
-        return function(...args) {
-          if(timer) clearTimeout(timer)
-          timer = setTimeout(() => {
-            func.apply(this, args)
-          },delay)
-        }
+      swipterImageLoad() {
+        this.tabOffsetTop= this.$refs.tabControl2.$el.offsetTop
+        // console.log(this.$refs.tabControl1.$el.offsetTop);
       }
+
+      
     },
   }
 </script>
 
 <style scoped>
 #home {
-    padding-top: 44px;
+    /* padding-top: 44px; */
     height: 100vh;
     position: relative;
   }
@@ -148,11 +157,11 @@
     color: #fff;
 
     /*在使用浏览器原生滚动时, 为了让导航不跟随一起滚动*/
-    position: fixed;
+    /* position: fixed;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 9
+    z-index: 9 */
   }
 
   .content {
@@ -165,8 +174,10 @@
   }
 
   .tab-control {
-    position: sticky;
-    top: 44px;
+    position: relative;
+    z-index: 9;
   }
+
+
 
 </style>
