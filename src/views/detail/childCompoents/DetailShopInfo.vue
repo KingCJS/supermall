@@ -78,6 +78,8 @@ export default {
     margin-top: 20px;
     margin-left: 10px;
     margin-right: 10px;
+    background-color: #fff;
+    z-index: 9;
   }
   .shop-top img{
     width: 45px;
