@@ -1,4 +1,3 @@
-import { Swiper } from '../../common/swiper';
 <template>
     <div class="goods">
         <goods-list-item v-for="item in goods" :goods-item = "item"></goods-list-item>

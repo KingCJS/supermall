@@ -102,6 +102,7 @@
             this.currentType = 'sell'
             break
         }
+        // this.showGoods = this.goods[this.currentType].list;
         this.$refs.tabControl1.currentIndex = index
         this.$refs.tabControl2.currentIndex = index
       },

@@ -41,3 +41,10 @@ export class Goods {
       this.goodsCount = shopInfo.cGoods
     }
   }
+
+  //获取推荐商品数据
+  export async function  getRecommend() {
+    return request({
+      url: '/recommend'
+    })
+  }
