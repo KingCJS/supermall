@@ -6,6 +6,7 @@
       @titleClick="titleClick"
       ref="nav"
     ></detail-nav-bar>
+
     <scroll
       class="content"
       :pullUpLoad="true"
@@ -37,7 +38,7 @@
       </div>
     </scroll>
     <back-top @click.native="backTop" v-show="isShowBackTop"></back-top>
-    <detail-bottom-bar></detail-bottom-bar>
+    <detail-bottom-bar @addToCart="addToCart"></detail-bottom-bar>
   </div>
 </template>
 
@@ -184,11 +185,23 @@ export default {
 
       this.isShowBackTop = -position.y > 1000;
     },
-
+    // 回到顶部
     backTop() {
       this.$refs.scroll.scrollTo(0, 0);
     },
 
+    // 获取商品信息加入购物车
+    addToCart() {
+      const product = {
+        image: this.topImages[0],
+        title: this.goods.title,
+        desc: this.goods.desc,
+        price: this.goods.nowPrice,
+        iid: this.iid,
+      };
+      console.log(product);
+      this.$store.dispatch("addCart", product);
+    },
   },
 };
 </script>
