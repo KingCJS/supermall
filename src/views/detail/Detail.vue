@@ -54,6 +54,7 @@ import {
 import Scroll from "@/compoents/common/scroll/Scroll";
 import GoodsList from "@/compoents/content/goods/GoodsList";
 import BackTop from "@/compoents/content/backTop/BackTop";
+// import Toast from '@/compoents/common/toast/Toast';
 
 import DetailNavBar from "@/views/detail/childCompoents/DetailNavBar";
 import DetailSwiper from "@/views/detail/childCompoents/DetailSwiper";
@@ -64,6 +65,8 @@ import DetailParamInfo from "@/views/detail/childCompoents/DetailParamInfo";
 import DetailCommentInfo from "@/views/detail/childCompoents/DetailCommentInfo";
 import DetailRecommendInfo from "@/views/detail/childCompoents/DetailRecommendInfo";
 import DetailBottomBar from "./childCompoents/DetailBottomBar.vue";
+
+import { mapActions } from "vuex";
 
 export default {
   name: "Detail",
@@ -80,6 +83,7 @@ export default {
     DetailRecommendInfo,
     DetailBottomBar,
     BackTop,
+    // Toast
   },
 
   data() {
@@ -95,6 +99,7 @@ export default {
       themeTopYs: [],
       currentIndex: 0,
       isShowBackTop: false,
+      message: null,
     };
   },
   created() {
@@ -148,6 +153,7 @@ export default {
     // }
   },
   methods: {
+    ...mapActions(["addCart"]),
     // 监听图片是否加载完成
     imageLoad() {
       this.themeTopYs = [];
@@ -198,9 +204,15 @@ export default {
         desc: this.goods.desc,
         price: this.goods.nowPrice,
         iid: this.iid,
+        // checked: true,
       };
-      console.log(product);
-      this.$store.dispatch("addCart", product);
+      this.addCart(product).then((res) => {
+        this.$toast.show(res);
+        // console.log(this.$toast);
+      });
+      // this.$store.dispatch("addCart", product).then((res) => {
+      //   console.log(res);
+      // });
     },
   },
 };

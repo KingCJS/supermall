@@ -1,16 +1,63 @@
+import { mapGetters } from 'vuex';
 <template>
-  <div></div>
+  <div class="bottom-menu">
+    <check-button
+      class="select-all"
+      v-model="isSelectAll"
+      @checkBtnClick="checkClick"
+    ></check-button>
+    <span>全选</span>
+    <span class="total-price">{{ totalPrice }} </span>
+    <span class="buy-product" @click="calculate">去计算:({{ checkLength }}) </span>
+  </div>
 </template>
 
 <script>
+import CheckButton from "@/views/cart/childComponents/CheckButton";
+import { mapGetters } from "vuex";
 export default {
   name: "Bottombar",
-  components: {},
+  components: {
+    CheckButton,
+  },
   data() {
     return {};
   },
-  mounted() {},
-  methods: {},
+  computed: {
+    ...mapGetters(["cartList"]),
+    totalPrice() {
+      return (
+        "￥" +
+        this.cartList
+          .filter((item) => {
+            return item.checked;
+          })
+          .reduce((previous, item) => {
+            return previous + item.price * item.count;
+          }, 0)
+          .toFixed(2)
+      );
+    },
+    checkLength() {
+      return this.cartList.filter((item) => item.checked).length;
+    },
+    isSelectAll() {
+      if (this.cartList.length === 0) return false;
+      return !this.cartList.find((item) => !item.checked);
+    },
+  },
+  methods: {
+    checkClick() {
+      if (this.isSelectAll) {
+        this.$store.state.cartList.forEach((item) => (item.checked = false));
+      } else {
+        this.$store.state.cartList.forEach((item) => (item.checked = true));
+      }
+    },
+    calculate() {
+      this.$toast.show("请选择购买的商品");
+    }
+  },
 };
 </script>
 
@@ -20,7 +67,7 @@ export default {
   height: 44px;
   background-color: #eee;
   position: fixed;
-  bottom: 50px;
+  bottom: 49px;
   left: 0;
   box-shadow: 0 -2px 3px rgba(0, 0, 0, 0.2);
   font-size: 14px;

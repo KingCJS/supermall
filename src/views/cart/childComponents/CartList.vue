@@ -38,6 +38,6 @@ export default {
 <style  scoped>
 .content {
   background-color: #fff;
-  height: calc(100% - 44px - 48px);
+  height: calc(100% - 44px - 48px - 44px);
 }
 </style>
